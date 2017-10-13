@@ -68,13 +68,27 @@ for IMAGE_FILENAME in training_set_list:
     LOWER_YELLOW = np.array([16, 120, 100], dtype=np.uint8)
     UPPER_YELLOW = np.array([95, 255, 255], dtype=np.uint8)
     yellow_mask = cv2.inRange(hsv_image, LOWER_YELLOW, UPPER_YELLOW)
-    kernel = np.ones((5,5),np.uint8)
-    yellow_mask_opening = cv2.morphologyEx(yellow_mask, cv2.MORPH_OPEN, kernel)
+    opening_se = np.ones((5,1),np.uint8)
+    yellow_mask_opening = cv2.morphologyEx(yellow_mask, cv2.MORPH_OPEN, opening_se)
+    opening_se = np.ones((1,5),np.uint8)
+    yellow_mask_opening = cv2.morphologyEx(yellow_mask_opening, cv2.MORPH_OPEN, opening_se)
     yellow_mask_median = cv2.medianBlur(yellow_mask_opening, 5)
     # cv2.imshow('yellow mask (binary)', yellow_mask)
     yellow_res = cv2.bitwise_and(im, im, mask=yellow_mask_median)
     # cv2.imshow('yellow mask (color)', yellow_res)
+
+    temp, contours, hierarchy = cv2.findContours(yellow_mask_median, cv2.RETR_TREE, cv2.CHAIN_APPROX_NONE)
+    # cv2.drawContours(yellow_res, contours, -1, (0, 0, 255), 2)
+    for cnt in contours:
+        x, y, w, h = cv2.boundingRect(cnt)
+        cv2.rectangle(yellow_res, (x, y), (x + w, y + h), (0, 0, 255), 2)
     SaveImage(yellow_res, 'yellow_mask')
+
+    # GLCM
+    # im_gray = cv2.cvtColor(im, cv2.COLOR_BGR2GRAY)
+    # im_gray = cv2.resize(im_gray, (50, 50))
+    # im_gray = (im_gray / 16).astype(np.uint8)
+
 
     # while True:
     #     if cv2.waitKey(1) & 0xFF == ord('w'):
