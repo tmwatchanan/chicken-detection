@@ -1,5 +1,8 @@
 # 261458 Course
 ComputerVision_Contest_2560_01.pdf
+# Dataset
+Contest/
+Processed/
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
